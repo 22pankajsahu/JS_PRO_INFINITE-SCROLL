@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Scroll</title>
+    <meta name="author" content="PANKAJ SAHU">
+    <meta name="keywords" content="Infinite Scroll, Image Gallery, Unsplash API, User-Friendly, Responsive Design, Smooth Scrolling, Picture Exploration, Web Application, Lazy Loading, Interactive, Image Viewer, Endless Stream, Online Photography, Visual Experience, Web Development">
+    <meta name="description" content="The Infinite Scroll web application allows users to seamlessly explore a never-ending stream of captivating pictures sourced from Unsplash. With an elegant user interface and smooth scrolling, users can discover and click on images to view more details. The application automatically loads additional images as the user reaches the end of the page, ensuring an uninterrupted visual journey.">
+
+    <style>
+        body {
+            background-color: rgb(223, 134, 134);
+            margin: 0;
+            padding: 0;
+            font-family: cursive;
+        }
+
+        header {
+            text-align: center;
+            text-decoration: underline;
+            color: whitesmoke;
+            text-shadow: 5px 5px 5px black;
+        }
+
+        .loader {
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #img-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 2px 2px 10px;
+            background-color: rgb(129, 223, 202);
+        }
+
+        img {
+            height: 300px;
+            width: 300px;
+            margin: 2rem;
+            border-radius: 10px;
+            object-fit: fill;
+            transition: transform 0.5s ease;
+            box-shadow: 2px 2px 8px;
+            cursor: pointer;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Infinite Pictures Scroll</h1>
+    </header>
+    <div class="loader" id="loader">
+        <img src="Spinner-1s-200px.svg" alt="loading">
+    </div>
+    <div id="img-container"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const imageContainer = document.getElementById("img-container");
+            const loader = document.getElementById("loader");
+            const apikey = "xJxJPJ1pk4HgFuMIsX9RFCavN6IGU4Yawa14P5Aq31s";
+            let page = 1;
+
+            async function getPhotos() {
+                loader.style.display = "block";
+                const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apikey}&count=10&page=${page}`;
+
+                try {
+                    const response = await fetch(apiUrl);
+                    const photosArray = await response.json();
+                    loader.style.display = "none";
+
+                    photosArray.forEach((photo) => {
+                        const item = document.createElement("div");
+                        const img = document.createElement("img");
+
+                        img.src = photo.urls.small;
+                        img.alt = photo.alt_description;
+                        item.appendChild(img);
+
+                        img.addEventListener("click", () => {
+                            window.location.href = photo.links.html;
+                        });
+
+                        imageContainer.appendChild(item);
+                    });
+
+                    page++;
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            getPhotos();
+
+            window.addEventListener("scroll", () => {
+                if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+                    getPhotos();
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>
