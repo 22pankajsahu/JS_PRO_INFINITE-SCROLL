@@ -23,10 +23,8 @@ You can try the live demo of the Movie Search application [here](https://22panka
 ## Screenshots
 
 Included relevant screenshots of the application here.
-
-![Screenshot infinite scroll 1](https://github.com/22pankajsahu/JS_PRO_INFINITE-SCROLL/assets/135128502/b93d299d-f00f-4491-be6c-3a7c858cb093)
-
-![Screenshot infinite scroll 2](https://github.com/22pankajsahu/JS_PRO_INFINITE-SCROLL/assets/135128502/00936069-b86c-4b98-842c-309f3311bc3e)
+![Screenshot 2](https://github.com/22pankajsahu/JS_PRO_INFINITE-SCROLL/assets/135128502/a267406c-4c18-4c83-b172-bff6510c2c4b)
+![Screenshot ](https://github.com/22pankajsahu/JS_PRO_INFINITE-SCROLL/assets/135128502/f27c791e-3b3e-409a-a9fb-2cbefe0d8991)
 
 ## Features
 
