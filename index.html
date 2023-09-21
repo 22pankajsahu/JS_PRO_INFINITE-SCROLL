@@ -10,105 +10,132 @@
     <meta name="description" content="The Infinite Scroll web application allows users to seamlessly explore a never-ending stream of captivating pictures sourced from Unsplash. With an elegant user interface and smooth scrolling, users can discover and click on images to view more details. The application automatically loads additional images as the user reaches the end of the page, ensuring an uninterrupted visual journey.">
 
     <style>
+        /* styles.css */
         body {
-            background-color: rgb(223, 134, 134);
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: cursive;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 20px;
         }
 
         header {
             text-align: center;
-            text-decoration: underline;
-            color: whitesmoke;
-            text-shadow: 5px 5px 5px black;
         }
 
-        .loader {
-            display: none;
-            justify-content: center;
-            align-items: center;
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Croissant One', cursive;
         }
 
-        #img-container {
+        #outputContainer {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            box-shadow: 2px 2px 10px;
-            background-color: rgb(129, 223, 202);
+            gap: 1rem;
+        }
+
+        a {
+            width: 40%;
+            box-shadow: 5px 0 15px black;
         }
 
         img {
-            height: 300px;
-            width: 300px;
-            margin: 2rem;
-            border-radius: 10px;
-            object-fit: fill;
-            transition: transform 0.5s ease;
-            box-shadow: 2px 2px 8px;
-            cursor: pointer;
-        }
-
-        img:hover {
-            transform: scale(1.05);
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <h1>Infinite Pictures Scroll</h1>
-    </header>
-    <div class="loader" id="loader">
-        <img src="Spinner-1s-200px.svg" alt="loading">
+    <div id="container">
+        <header>
+            <h1>Endless Scrolling</h1>
+        </header>
+
+        <div id="outputContainer"></div>
     </div>
-    <div id="img-container"></div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const imageContainer = document.getElementById("img-container");
-            const loader = document.getElementById("loader");
-            const apikey = "xJxJPJ1pk4HgFuMIsX9RFCavN6IGU4Yawa14P5Aq31s";
-            let page = 1;
+        // app.js
+        const imageContainer = document.getElementById("outputContainer");
 
-            async function getPhotos() {
-                loader.style.display = "block";
-                const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apikey}&count=10&page=${page}`;
+        let photosArray = [];
 
-                try {
-                    const response = await fetch(apiUrl);
-                    const photosArray = await response.json();
-                    loader.style.display = "none";
+        let ready = false;
+        let imagesLoaded = 0;
+        let totalImages = 0;
 
-                    photosArray.forEach((photo) => {
-                        const item = document.createElement("div");
-                        const img = document.createElement("img");
+        const count = 10;
+        const apikey = "_DDIVJSgdK-GI1wA3aHOtxC9YTt8tCY6-4jMk7guznY";
+        const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apikey}&count=${count}`;
 
-                        img.src = photo.urls.small;
-                        img.alt = photo.alt_description;
-                        item.appendChild(img);
-
-                        img.addEventListener("click", () => {
-                            window.location.href = photo.links.html;
-                        });
-
-                        imageContainer.appendChild(item);
-                    });
-
-                    page++;
-                } catch (error) {
-                    console.error(error);
-                }
+        async function getPhotos() {
+            try {
+                const response = await fetch(apiUrl);
+                photosArray = await response.json();
+                displayPhotos();
+            } catch (error) {
+                console.error(error);
             }
+        }
 
-            getPhotos();
+        function setAttribute(element, attributes) {
+            for (const key in attributes) {
+                element.setAttribute(key, attributes[key]);
+            }
+        }
 
-            window.addEventListener("scroll", () => {
-                if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
-                    getPhotos();
-                }
+        function imageLoaded() {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                ready = true;
+                console.log("ready", ready);
+            }
+        }
+
+        function displayPhotos() {
+            totalImages = photosArray.length;
+            imagesLoaded = 0;
+
+            photosArray.forEach((photo) => {
+                const item = document.createElement("a");
+                setAttribute(item, {
+                    href: photo.links.html,
+                    target: "_blank",
+                });
+
+                const img = document.createElement("img");
+                setAttribute(img, {
+                    src: photo.urls.regular,
+                    alt: photo.alt_description,
+                    title: photo.alt_description,
+                });
+
+                img.addEventListener("load", imageLoaded);
+                item.appendChild(img);
+                imageContainer.appendChild(item);
             });
+        }
+
+        window.addEventListener("scroll", () => {
+            if (
+                window.scrollY + window.innerHeight >= document.body.offsetHeight &&
+                ready
+            ) {
+                ready = false;
+                getPhotos();
+            }
         });
+
+        getPhotos();
 
     </script>
 </body>
