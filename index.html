@@ -11,64 +11,73 @@
 
     <style>
         /* styles.css */
+        @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300&family=Sedgwick+Ave+Display&display=swap');
+
+        html {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
-        }
-
-        #container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
+            font-family: 'Sedgwick Ave Display', cursive;
+            background-color: whitesmoke;
         }
 
         h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            font-family: 'Croissant One', cursive;
+            text-align: center;
+            margin-top: 25px;
+            margin-bottom: 45px;
+            font-size: 40px;
+            letter-spacing: 1px;
         }
 
-        #outputContainer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
         }
 
-        a {
-            width: 40%;
-            box-shadow: 5px 0 15px black;
+        .loader img {
+            position: fixed;
+            top: 40%;
+            left: 45%;
         }
 
-        img {
+        .img-container {
+            margin: 10px 30%;
+        }
+
+        .img-container img {
             width: 100%;
-            height: auto;
+            margin-top: 5px;
+        }
+
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            .img-container {
+                margin: 10px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div id="container">
-        <header>
-            <h1>Endless Scrolling</h1>
-        </header>
-
-        <div id="outputContainer"></div>
+    <h1>ENDLESS SCROLL</h1>
+    <div class="loader" id="loader">
+        <img src="Spinner-1s-200px.svg" alt="loading">
     </div>
-
+    <div class="img-container" id="img-container"></div>
     <script>
         // app.js
-        const imageContainer = document.getElementById("outputContainer");
+        window.onload = function () {
+            document.getElementById('loader').style.display = 'none';
+        };
 
+        const imageContainer = document.getElementById("img-container");
         let photosArray = [];
-
         let ready = false;
         let imagesLoaded = 0;
         let totalImages = 0;
@@ -76,16 +85,6 @@
         const count = 10;
         const apikey = "_DDIVJSgdK-GI1wA3aHOtxC9YTt8tCY6-4jMk7guznY";
         const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${apikey}&count=${count}`;
-
-        async function getPhotos() {
-            try {
-                const response = await fetch(apiUrl);
-                photosArray = await response.json();
-                displayPhotos();
-            } catch (error) {
-                console.error(error);
-            }
-        }
 
         function setAttribute(element, attributes) {
             for (const key in attributes) {
@@ -97,7 +96,6 @@
             imagesLoaded++;
             if (imagesLoaded === totalImages) {
                 ready = true;
-                console.log("ready", ready);
             }
         }
 
@@ -107,6 +105,7 @@
 
             photosArray.forEach((photo) => {
                 const item = document.createElement("a");
+
                 setAttribute(item, {
                     href: photo.links.html,
                     target: "_blank",
@@ -119,17 +118,26 @@
                     title: photo.alt_description,
                 });
 
-                img.addEventListener("load", imageLoaded);
-                item.appendChild(img);
-                imageContainer.appendChild(item);
+                img.addEventListener('load', imageLoaded);
+
+                item.append(img);
+
+                imageContainer.append(item);
             });
         }
 
+        async function getPhotos() {
+            try {
+                const response = await fetch(apiUrl);
+                photosArray = await response.json();
+                displayPhotos();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         window.addEventListener("scroll", () => {
-            if (
-                window.scrollY + window.innerHeight >= document.body.offsetHeight &&
-                ready
-            ) {
+            if (window.scrollY + window.innerHeight >= document.body.offsetHeight && ready) {
                 ready = false;
                 getPhotos();
             }
